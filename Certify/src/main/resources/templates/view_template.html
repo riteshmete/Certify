@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Certificate Information</h1>
+<hr />
+<form th:action="@{/save}"
+      th:object="${certificateContainer}"
+      method="post"
+      enctype="multipart/form-data">
+<table>
+    <tr>
+        <th>upload the template</th>
+        <td><input type ="file" th:field="*{template}"/> </td>
+    </tr>
+    <tr>
+        <th>Upload the CSV data</th>
+        <td><input type ="file" th:field="*{csv}"/></td>
+    </tr>
+    <tr>
+        <th>Enter the X cordinate</th>
+        <td><input type="number" th:field="*{nameX}"/> </td>
+    </tr>
+    <tr>
+        <th>Enter the Y cordinate</th>
+        <td><input type="number" th:field="*{nameY}"/> </td>
+    </tr>
+    <tr>
+        <th>Enter the Fontsize</th>
+        <td><input type = "number" th:field="*{fontSize}"/> </td>
+    </tr>
+    <tr>
+        <th></th>
+        <td><input type="submit" /></td>
+    </tr>
+</table>
+</form>
+</body>
+</html>
