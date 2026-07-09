@@ -20,20 +20,7 @@ public class CertificateController {
     @PostMapping("/save")
     public String submitForm(@ModelAttribute CertificateContainer certificate) {
 
-        System.out.println("Template : " +
-                certificate.getTemplate().getOriginalFilename());
 
-        System.out.println("CSV : " +
-                certificate.getCsv().getOriginalFilename());
-
-        System.out.println("X : " +
-                certificate.getNameX());
-
-        System.out.println("Y : " +
-                certificate.getNameY());
-
-        System.out.println("Font : " +
-                certificate.getFontSize());
         return "view_template";
     }
 
