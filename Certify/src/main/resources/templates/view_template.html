@@ -2,41 +2,86 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Certificate Generator</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
+
 <body>
-<h1>Certificate Information</h1>
-<hr />
-<form th:action="@{/save}"
-      th:object="${certificateContainer}"
-      method="post"
-      enctype="multipart/form-data">
-<table>
-    <tr>
-        <th>upload the template</th>
-        <td><input type ="file" th:field="*{template}"/> </td>
-    </tr>
-    <tr>
-        <th>Upload the CSV data</th>
-        <td><input type ="file" th:field="*{csv}"/></td>
-    </tr>
-    <tr>
-        <th>Enter the X cordinate</th>
-        <td><input type="number" th:field="*{nameX}"/> </td>
-    </tr>
-    <tr>
-        <th>Enter the Y cordinate</th>
-        <td><input type="number" th:field="*{nameY}"/> </td>
-    </tr>
-    <tr>
-        <th>Enter the Fontsize</th>
-        <td><input type = "number" th:field="*{fontSize}"/> </td>
-    </tr>
-    <tr>
-        <th></th>
-        <td><input type="submit" /></td>
-    </tr>
-</table>
-</form>
+
+<div class="container">
+
+    <h1 class="logo">Certify</h1>
+
+    <h1>Certificate Information</h1>
+
+    <p class="subtitle">
+        Upload your certificate template and CSV file to generate certificates.
+    </p>
+
+    <form th:action="@{/save}"
+          th:object="${certificateContainer}"
+          method="post"
+          enctype="multipart/form-data">
+
+        <table>
+
+            <tr>
+                <th>Upload Template</th>
+                <td>
+                    <input type="file" th:field="*{template}">
+                </td>
+            </tr>
+
+            <tr>
+                <th>Upload CSV</th>
+                <td>
+                    <input type="file" th:field="*{csv}">
+                </td>
+            </tr>
+
+            <tr>
+                <th>X Coordinate</th>
+                <td>
+                    <input type="number" th:field="*{nameX}">
+                </td>
+            </tr>
+
+            <tr>
+                <th>Y Coordinate</th>
+                <td>
+                    <input type="number" th:field="*{nameY}">
+                </td>
+            </tr>
+
+            <tr>
+                <th>Font Size</th>
+                <td>
+                    <input type="number" th:field="*{fontSize}">
+                </td>
+            </tr>
+
+            <tr>
+                <td></td>
+
+            </tr>
+
+        </table>
+
+        <td>
+            <input type="submit" value="Generate Certificates">
+        </td>
+
+    </form>
+
+</div>
+
 </body>
 </html>
