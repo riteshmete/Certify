@@ -154,6 +154,10 @@
 
                     <img id="templatePreview" alt="Certificate Template Preview">
 
+                    <!-- Center Alignment Guides -->
+                    <div id="verticalGuide" class="guide-line vertical-guide"></div>
+                    <div id="horizontalGuide" class="guide-line horizontal-guide"></div>
+
                     <!-- Red click marker -->
                     <div id="clickMarker" class="click-marker">
                     </div>
@@ -214,6 +218,10 @@
 
             const clickMarker = document.getElementById("clickMarker");
 
+            // Center alignment guide line elements
+            const verticalGuide = document.getElementById("verticalGuide");
+            const horizontalGuide = document.getElementById("horizontalGuide");
+
             const certForm = document.getElementById("certForm");
 
 
@@ -260,21 +268,63 @@
 
                     clickMarker.style.display = "none";
 
+                    // Hide guide lines on new image load
+                    verticalGuide.style.display = "none";
+                    horizontalGuide.style.display = "none";
+
                 };
 
             });
 
 
             /*
-             * Get X and Y coordinates
+             * Get X and Y coordinates with center snapping and alignment guides
              */
             function getCoordinates(event) {
 
                 /*
-                 * Position of mouse inside displayed image
+                 * Raw mouse position inside displayed image
                  */
-                const x = event.offsetX;
-                const y = event.offsetY;
+                let x = event.offsetX;
+                let y = event.offsetY;
+
+
+                /*
+                 * Calculate horizontal and vertical centers of displayed image
+                 */
+                const centerX = templatePreview.clientWidth / 2;
+                const centerY = templatePreview.clientHeight / 2;
+
+                /*
+                 * Snap tolerance in pixels
+                 */
+                const tolerance = 8;
+
+
+                /*
+                 * Check horizontal center proximity:
+                 * Show vertical guide line & snap X coordinate if close to center
+                 */
+                if (Math.abs(x - centerX) <= tolerance) {
+                    x = centerX;
+                    verticalGuide.style.left = centerX + "px";
+                    verticalGuide.style.display = "block";
+                } else {
+                    verticalGuide.style.display = "none";
+                }
+
+
+                /*
+                 * Check vertical center proximity:
+                 * Show horizontal guide line & snap Y coordinate if close to center
+                 */
+                if (Math.abs(y - centerY) <= tolerance) {
+                    y = centerY;
+                    horizontalGuide.style.top = centerY + "px";
+                    horizontalGuide.style.display = "block";
+                } else {
+                    horizontalGuide.style.display = "none";
+                }
 
 
                 /*
@@ -367,6 +417,12 @@
             templatePreview.addEventListener("mouseleave", function () {
 
                 mouseCoords.textContent = "0 | 0";
+
+                /*
+                 * Hide alignment guides when mouse leaves image
+                 */
+                verticalGuide.style.display = "none";
+                horizontalGuide.style.display = "none";
 
             });
 

@@ -191,6 +191,35 @@ input[type="number"]:focus {
     z-index: 10;
 }
 
+/* Alignment guide lines */
+.guide-line {
+    position: absolute;
+
+    background-color: #0071e3;
+
+    pointer-events: none;
+
+    display: none;
+
+    z-index: 5;
+
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+.vertical-guide {
+    top: 0;
+    bottom: 0;
+
+    width: 1px;
+}
+
+.horizontal-guide {
+    left: 0;
+    right: 0;
+
+    height: 1px;
+}
+
 /* Selected coordinates */
 .selected-coords-box {
     margin-top: 15px;

@@ -53,10 +53,10 @@ public class CertificateService {
     }
 
     private void validateInputs(MultipartFile template,
-                                MultipartFile csv,
-                                int nameX,
-                                int nameY,
-                                int fontSize) {
+            MultipartFile csv,
+            int nameX,
+            int nameY,
+            int fontSize) {
 
         if (template == null || template.isEmpty()) {
             throw new IllegalArgumentException("Template image is required.");
@@ -116,8 +116,7 @@ public class CertificateService {
                         nameX,
                         nameY,
                         fontSize,
-                        outputDir
-                );
+                        outputDir);
 
                 generatedFiles.add(certFile);
 
@@ -129,8 +128,7 @@ public class CertificateService {
                         "Failed to generate certificate for "
                                 + studentName
                                 + " : "
-                                + e.getMessage()
-                );
+                                + e.getMessage());
             }
         }
 
@@ -156,23 +154,28 @@ public class CertificateService {
         BufferedImage certificate = new BufferedImage(
                 originalTemplate.getWidth(),
                 originalTemplate.getHeight(),
-                BufferedImage.TYPE_INT_RGB
-        );
+                BufferedImage.TYPE_INT_RGB);
 
         Graphics2D g2d = certificate.createGraphics();
 
         g2d.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON
-        );
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
         g2d.drawImage(originalTemplate, 0, 0, null);
 
         g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
         g2d.setColor(Color.BLACK);
 
-        g2d.drawString(studentName, nameX, nameY);
+        FontMetrics metrics = g2d.getFontMetrics();
 
+        int textWidth = metrics.stringWidth(studentName);
+
+        int textX = nameX - (textWidth / 2);
+
+        int textY = nameY;
+
+        g2d.drawString(studentName, textX, textY);
         g2d.dispose();
 
         String filename = studentName
@@ -192,7 +195,7 @@ public class CertificateService {
         File zipFile = new File("certificate_output/certificates.zip");
 
         try (FileOutputStream fos = new FileOutputStream(zipFile);
-             ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+                ZipOutputStream zipOut = new ZipOutputStream(fos)) {
 
             for (File file : generatedFiles) {
 
