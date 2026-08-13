@@ -1,87 +1,401 @@
 <!DOCTYPE html>
+
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
+
     <meta charset="UTF-8">
+
     <title>Certificate Generator</title>
 
     <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- CSS -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
+
 </head>
+
 
 <body>
 
-<div class="container">
 
-    <h1 class="logo">Certify</h1>
+    <div class="container">
 
-    <h1>Certificate Information</h1>
+        <!-- Project Name -->
+        <h1 class="logo">
+            Certify
+        </h1>
 
-    <p class="subtitle">
-        Upload your certificate template and CSV file to generate certificates.
-    </p>
 
-    <form th:action="@{/save}"
-          th:object="${certificateContainer}"
-          method="post"
-          enctype="multipart/form-data">
+        <!-- Main Heading -->
+        <h1>
+            Certificate Information
+        </h1>
 
-        <table>
 
-            <tr>
-                <th>Upload Template</th>
-                <td>
-                    <input type="file" th:field="*{template}">
-                </td>
-            </tr>
+        <!-- Description -->
+        <p class="subtitle">
+            Upload your certificate template and CSV file to generate certificates.
+        </p>
 
-            <tr>
-                <th>Upload CSV</th>
-                <td>
-                    <input type="file" th:field="*{csv}">
-                </td>
-            </tr>
 
-            <tr>
-                <th>X Coordinate</th>
-                <td>
-                    <input type="number" th:field="*{nameX}">
-                </td>
-            </tr>
+        <!-- Form -->
+        <form th:action="@{/save}" th:object="${certificateContainer}" method="post" enctype="multipart/form-data"
+            id="certForm">
 
-            <tr>
-                <th>Y Coordinate</th>
-                <td>
-                    <input type="number" th:field="*{nameY}">
-                </td>
-            </tr>
 
-            <tr>
-                <th>Font Size</th>
-                <td>
-                    <input type="number" th:field="*{fontSize}">
-                </td>
-            </tr>
+            <table>
 
-            <tr>
-                <td></td>
+                <!-- Upload Template -->
+                <tr>
 
-            </tr>
+                    <th>
+                        Upload Template
+                    </th>
 
-        </table>
+                    <td>
 
-        <td>
-            <input type="submit" value="Generate Certificates">
-        </td>
+                        <input type="file" id="templateInput" th:field="*{template}" accept="image/*" required>
 
-    </form>
+                    </td>
 
-</div>
+                </tr>
+
+
+                <!-- Upload CSV -->
+                <tr>
+
+                    <th>
+                        Upload CSV
+                    </th>
+
+                    <td>
+
+                        <input type="file" id="csvInput" th:field="*{csv}" required>
+
+                    </td>
+
+                </tr>
+
+
+                <!-- Font Size -->
+                <tr>
+
+                    <th>
+                        Font Size
+                    </th>
+
+                    <td>
+
+                        <input type="number" id="fontSize" th:field="*{fontSize}" placeholder="e.g. 40" required>
+
+                    </td>
+
+                </tr>
+
+
+                <!-- Hidden X Coordinate -->
+                <tr style="display: none;">
+
+                    <th>
+                        X Coordinate
+                    </th>
+
+                    <td>
+
+                        <input type="number" id="nameX" th:field="*{nameX}">
+
+                    </td>
+
+                </tr>
+
+
+                <!-- Hidden Y Coordinate -->
+                <tr style="display: none;">
+
+                    <th>
+                        Y Coordinate
+                    </th>
+
+                    <td>
+
+                        <input type="number" id="nameY" th:field="*{nameY}">
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+
+            <!-- Certificate Preview -->
+            <div id="previewSection" class="preview-section" style="display: none;">
+
+                <div class="preview-header">
+
+                    <h3>
+                        Certificate Preview
+                    </h3>
+
+                    <span id="mouseCoords" class="coord-badge">
+                        0 | 0
+                    </span>
+
+                </div>
+
+
+                <!-- Image -->
+                <div class="image-wrapper">
+
+                    <img id="templatePreview" alt="Certificate Template Preview">
+
+                    <!-- Red click marker -->
+                    <div id="clickMarker" class="click-marker">
+                    </div>
+
+                </div>
+
+
+                <!-- Selected Coordinates -->
+                <div class="selected-coords-box">
+
+                    <strong>
+                        Selected Position
+                    </strong>
+
+                    <div class="coords-display">
+
+                        <span>
+                            X:
+                            <strong id="displayX">--</strong>
+                        </span>
+
+                        <span>
+                            Y:
+                            <strong id="displayY">--</strong>
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Generate Button -->
+            <input type="submit" value="Generate Certificates" id="submitBtn">
+
+
+        </form>
+
+    </div>
+
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const templateInput = document.getElementById("templateInput");
+            const templatePreview = document.getElementById("templatePreview");
+            const previewSection = document.getElementById("previewSection");
+
+            const mouseCoords = document.getElementById("mouseCoords");
+
+            const displayX = document.getElementById("displayX");
+            const displayY = document.getElementById("displayY");
+
+            const nameX = document.getElementById("nameX");
+            const nameY = document.getElementById("nameY");
+
+            const clickMarker = document.getElementById("clickMarker");
+
+            const certForm = document.getElementById("certForm");
+
+
+            /*
+             * Upload image
+             */
+            templateInput.addEventListener("change", function () {
+
+                const file = templateInput.files[0];
+
+                if (!file) {
+                    return;
+                }
+
+
+                /*
+                 * Check if uploaded file is an image
+                 */
+                if (!file.type.startsWith("image/")) {
+
+                    alert("Please select an image file.");
+
+                    templateInput.value = "";
+
+                    return;
+                }
+
+
+                /*
+                 * Display uploaded image
+                 */
+                templatePreview.src = URL.createObjectURL(file);
+
+
+                templatePreview.onload = function () {
+
+                    previewSection.style.display = "block";
+
+                    nameX.value = "";
+                    nameY.value = "";
+
+                    displayX.textContent = "--";
+                    displayY.textContent = "--";
+
+                    clickMarker.style.display = "none";
+
+                };
+
+            });
+
+
+            /*
+             * Get X and Y coordinates
+             */
+            function getCoordinates(event) {
+
+                /*
+                 * Position of mouse inside displayed image
+                 */
+                const x = event.offsetX;
+                const y = event.offsetY;
+
+
+                /*
+                 * Convert displayed coordinates
+                 * to original image coordinates
+                 */
+                const scaleX =
+                    templatePreview.naturalWidth /
+                    templatePreview.clientWidth;
+
+                const scaleY =
+                    templatePreview.naturalHeight /
+                    templatePreview.clientHeight;
+
+
+                const originalX =
+                    Math.round(x * scaleX);
+
+                const originalY =
+                    Math.round(y * scaleY);
+
+
+                return {
+                    x: originalX,
+                    y: originalY,
+
+                    displayX: x,
+                    displayY: y
+                };
+
+            }
+
+
+            /*
+             * Mouse movement
+             */
+            templatePreview.addEventListener("mousemove", function (event) {
+
+                const coordinates =
+                    getCoordinates(event);
+
+
+                mouseCoords.textContent =
+                    coordinates.x + " | " + coordinates.y;
+
+            });
+
+
+            /*
+             * Mouse click
+             */
+            templatePreview.addEventListener("click", function (event) {
+
+                const coordinates =
+                    getCoordinates(event);
+
+
+                /*
+                 * Save coordinates
+                 */
+                nameX.value = coordinates.x;
+                nameY.value = coordinates.y;
+
+
+                /*
+                 * Display coordinates
+                 */
+                displayX.textContent = coordinates.x;
+                displayY.textContent = coordinates.y;
+
+
+                /*
+                 * Show red marker
+                 */
+                clickMarker.style.left =
+                    coordinates.displayX + "px";
+
+                clickMarker.style.top =
+                    coordinates.displayY + "px";
+
+                clickMarker.style.display =
+                    "block";
+
+            });
+
+
+            /*
+             * Mouse leaves image
+             */
+            templatePreview.addEventListener("mouseleave", function () {
+
+                mouseCoords.textContent = "0 | 0";
+
+            });
+
+
+            /*
+             * Check before submitting form
+             */
+            certForm.addEventListener("submit", function (event) {
+
+                if (
+                    nameX.value === "" ||
+                    nameY.value === ""
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please click on the certificate image to select a position."
+                    );
+
+                }
+
+            });
+
+        });
+
+    </script>
+
 
 </body>
+
 </html>
