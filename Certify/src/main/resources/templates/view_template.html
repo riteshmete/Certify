@@ -1,215 +1,122 @@
 <!DOCTYPE html>
-
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
-
     <meta charset="UTF-8">
+    <title>Certify</title>
 
-    <title>Certificate Generator</title>
-
-    <!-- Google Font -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Great+Vibes&display=swap" rel="stylesheet">
 
     <!-- CSS -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
-
 </head>
-
-
 <body>
 
+    <!-- Header -->
+    <header class="app-header">
+        <h1>Certify</h1>
+    </header>
 
-    <div class="container">
+    <!-- Main Content -->
+    <main class="main-container">
+        <form th:action="@{/save}" th:object="${certificateContainer}" method="post" enctype="multipart/form-data" id="certForm">
+            
+            <div class="sections-grid">
+                
+                <!-- Left Section: User Input -->
+                <section class="section-card">
+                    <h2 class="section-title">User Input</h2>
 
-        <!-- Project Name -->
-        <h1 class="logo">
-            Certify
-        </h1>
-
-
-        <!-- Main Heading -->
-        <h1>
-            Certificate Information
-        </h1>
-
-
-        <!-- Description -->
-        <p class="subtitle">
-            Upload your certificate template and CSV file to generate certificates.
-        </p>
-
-
-        <!-- Form -->
-        <form th:action="@{/save}" th:object="${certificateContainer}" method="post" enctype="multipart/form-data"
-            id="certForm">
-
-
-            <table>
-
-                <!-- Upload Template -->
-                <tr>
-
-                    <th>
-                        Upload Template
-                    </th>
-
-                    <td>
-
+                    <!-- Upload Template -->
+                    <div class="form-group">
+                        <label for="templateInput">Upload Template</label>
                         <input type="file" id="templateInput" th:field="*{template}" accept="image/*" required>
+                    </div>
 
-                    </td>
-
-                </tr>
-
-
-                <!-- Upload CSV -->
-                <tr>
-
-                    <th>
-                        Upload CSV
-                    </th>
-
-                    <td>
-
+                    <!-- Upload CSV -->
+                    <div class="form-group">
+                        <label for="csvInput">Upload CSV</label>
                         <input type="file" id="csvInput" th:field="*{csv}" required>
+                    </div>
 
-                    </td>
+                    <!-- Font -->
+                    <div class="form-group">
+                        <label for="font">Font</label>
+                        <select id="font" th:field="*{font}">
+                            <option value="Great Vibes">Great Vibes</option>
+                            <option value="Alex Brush">Alex Brush</option>
+                            <option value="Allura">Allura</option>
+                            <option value="Arial">Arial</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Georgia">Georgia</option>
+                        </select>
+                    </div>
 
-                </tr>
-
-
-                <!-- Font Size -->
-                <tr>
-
-                    <th>
-                        Font Size
-                    </th>
-
-                    <td>
-
+                    <!-- Font Size -->
+                    <div class="form-group">
+                        <label for="fontSize">Font Size</label>
                         <input type="number" id="fontSize" th:field="*{fontSize}" placeholder="e.g. 40" required>
-
-                    </td>
-
-                </tr>
-
-
-                <!-- Hidden X Coordinate -->
-                <tr style="display: none;">
-
-                    <th>
-                        X Coordinate
-                    </th>
-
-                    <td>
-
-                        <input type="number" id="nameX" th:field="*{nameX}">
-
-                    </td>
-
-                </tr>
-
-
-                <!-- Hidden Y Coordinate -->
-                <tr style="display: none;">
-
-                    <th>
-                        Y Coordinate
-                    </th>
-
-                    <td>
-
-                        <input type="number" id="nameY" th:field="*{nameY}">
-
-                    </td>
-
-                </tr>
-
-            </table>
-
-
-            <!-- Certificate Preview -->
-            <div id="previewSection" class="preview-section" style="display: none;">
-
-                <div class="preview-header">
-
-                    <h3>
-                        Certificate Preview
-                    </h3>
-
-                    <span id="mouseCoords" class="coord-badge">
-                        0 | 0
-                    </span>
-
-                </div>
-
-
-                <!-- Image -->
-                <div class="image-wrapper">
-
-                    <img id="templatePreview" alt="Certificate Template Preview">
-
-                    <!-- Center Alignment Guides -->
-                    <div id="verticalGuide" class="guide-line vertical-guide"></div>
-                    <div id="horizontalGuide" class="guide-line horizontal-guide"></div>
-
-                    <!-- Red click marker -->
-                    <div id="clickMarker" class="click-marker">
                     </div>
 
-                </div>
+                    <!-- Hidden Coordinates -->
+                    <input type="number" id="nameX" th:field="*{nameX}" style="display: none;">
+                    <input type="number" id="nameY" th:field="*{nameY}" style="display: none;">
 
+                    <!-- Generate Button -->
+                    <input type="submit" value="Generate Certificates" id="submitBtn">
+                </section>
 
-                <!-- Selected Coordinates -->
-                <div class="selected-coords-box">
+                <!-- Right Section: Certificate Preview -->
+                <section class="section-card">
+                    <h2 class="section-title">Certificate Preview</h2>
 
-                    <strong>
-                        Selected Position
-                    </strong>
-
-                    <div class="coords-display">
-
-                        <span>
-                            X:
-                            <strong id="displayX">--</strong>
-                        </span>
-
-                        <span>
-                            Y:
-                            <strong id="displayY">--</strong>
-                        </span>
-
+                    <!-- Placeholder before image upload -->
+                    <div id="previewPlaceholder" class="preview-placeholder">
+                        Upload a template image to select position
                     </div>
 
-                </div>
+                    <!-- Active Certificate Preview -->
+                    <div id="previewSection" class="preview-section" style="display: none;">
+                        
+                        <div class="preview-header">
+                            <span id="mouseCoords" class="coord-badge">0 | 0</span>
+                        </div>
+
+                        <!-- Image Canvas & Guides -->
+                        <div class="image-wrapper">
+                            <img id="templatePreview" alt="Certificate Template Preview">
+                            <div id="verticalGuide" class="guide-line vertical-guide"></div>
+                            <div id="horizontalGuide" class="guide-line horizontal-guide"></div>
+                            <div id="clickMarker" class="click-marker"></div>
+                        </div>
+
+                        <!-- Selected Coordinates -->
+                        <div class="selected-coords-box">
+                            <strong>Selected Position</strong>
+                            <div class="coords-display">
+                                <span>X: <strong id="displayX">--</strong></span>
+                                <span>Y: <strong id="displayY">--</strong></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
 
             </div>
-
-
-            <!-- Generate Button -->
-            <input type="submit" value="Generate Certificates" id="submitBtn">
-
-
         </form>
-
-    </div>
-
+    </main>
 
     <script>
-
         document.addEventListener("DOMContentLoaded", function () {
 
             const templateInput = document.getElementById("templateInput");
             const templatePreview = document.getElementById("templatePreview");
             const previewSection = document.getElementById("previewSection");
+            const previewPlaceholder = document.getElementById("previewPlaceholder");
 
             const mouseCoords = document.getElementById("mouseCoords");
-
             const displayX = document.getElementById("displayX");
             const displayY = document.getElementById("displayY");
 
@@ -217,48 +124,34 @@
             const nameY = document.getElementById("nameY");
 
             const clickMarker = document.getElementById("clickMarker");
-
-            // Center alignment guide line elements
             const verticalGuide = document.getElementById("verticalGuide");
             const horizontalGuide = document.getElementById("horizontalGuide");
 
             const certForm = document.getElementById("certForm");
 
-
             /*
              * Upload image
              */
             templateInput.addEventListener("change", function () {
-
                 const file = templateInput.files[0];
 
                 if (!file) {
                     return;
                 }
 
-
-                /*
-                 * Check if uploaded file is an image
-                 */
                 if (!file.type.startsWith("image/")) {
-
                     alert("Please select an image file.");
-
                     templateInput.value = "";
-
                     return;
                 }
 
-
-                /*
-                 * Display uploaded image
-                 */
                 templatePreview.src = URL.createObjectURL(file);
 
-
                 templatePreview.onload = function () {
-
                     previewSection.style.display = "block";
+                    if (previewPlaceholder) {
+                        previewPlaceholder.style.display = "none";
+                    }
 
                     nameX.value = "";
                     nameY.value = "";
@@ -267,44 +160,22 @@
                     displayY.textContent = "--";
 
                     clickMarker.style.display = "none";
-
-                    // Hide guide lines on new image load
                     verticalGuide.style.display = "none";
                     horizontalGuide.style.display = "none";
-
                 };
-
             });
-
 
             /*
              * Get X and Y coordinates with center snapping and alignment guides
              */
             function getCoordinates(event) {
-
-                /*
-                 * Raw mouse position inside displayed image
-                 */
                 let x = event.offsetX;
                 let y = event.offsetY;
 
-
-                /*
-                 * Calculate horizontal and vertical centers of displayed image
-                 */
                 const centerX = templatePreview.clientWidth / 2;
                 const centerY = templatePreview.clientHeight / 2;
-
-                /*
-                 * Snap tolerance in pixels
-                 */
                 const tolerance = 8;
 
-
-                /*
-                 * Check horizontal center proximity:
-                 * Show vertical guide line & snap X coordinate if close to center
-                 */
                 if (Math.abs(x - centerX) <= tolerance) {
                     x = centerX;
                     verticalGuide.style.left = centerX + "px";
@@ -313,11 +184,6 @@
                     verticalGuide.style.display = "none";
                 }
 
-
-                /*
-                 * Check vertical center proximity:
-                 * Show horizontal guide line & snap Y coordinate if close to center
-                 */
                 if (Math.abs(y - centerY) <= tolerance) {
                     y = centerY;
                     horizontalGuide.style.top = centerY + "px";
@@ -326,132 +192,65 @@
                     horizontalGuide.style.display = "none";
                 }
 
+                const scaleX = templatePreview.naturalWidth / templatePreview.clientWidth;
+                const scaleY = templatePreview.naturalHeight / templatePreview.clientHeight;
 
-                /*
-                 * Convert displayed coordinates
-                 * to original image coordinates
-                 */
-                const scaleX =
-                    templatePreview.naturalWidth /
-                    templatePreview.clientWidth;
-
-                const scaleY =
-                    templatePreview.naturalHeight /
-                    templatePreview.clientHeight;
-
-
-                const originalX =
-                    Math.round(x * scaleX);
-
-                const originalY =
-                    Math.round(y * scaleY);
-
+                const originalX = Math.round(x * scaleX);
+                const originalY = Math.round(y * scaleY);
 
                 return {
                     x: originalX,
                     y: originalY,
-
                     displayX: x,
                     displayY: y
                 };
-
             }
-
 
             /*
              * Mouse movement
              */
             templatePreview.addEventListener("mousemove", function (event) {
-
-                const coordinates =
-                    getCoordinates(event);
-
-
-                mouseCoords.textContent =
-                    coordinates.x + " | " + coordinates.y;
-
+                const coordinates = getCoordinates(event);
+                mouseCoords.textContent = coordinates.x + " | " + coordinates.y;
             });
-
 
             /*
              * Mouse click
              */
             templatePreview.addEventListener("click", function (event) {
+                const coordinates = getCoordinates(event);
 
-                const coordinates =
-                    getCoordinates(event);
-
-
-                /*
-                 * Save coordinates
-                 */
                 nameX.value = coordinates.x;
                 nameY.value = coordinates.y;
 
-
-                /*
-                 * Display coordinates
-                 */
                 displayX.textContent = coordinates.x;
                 displayY.textContent = coordinates.y;
 
-
-                /*
-                 * Show red marker
-                 */
-                clickMarker.style.left =
-                    coordinates.displayX + "px";
-
-                clickMarker.style.top =
-                    coordinates.displayY + "px";
-
-                clickMarker.style.display =
-                    "block";
-
+                clickMarker.style.left = coordinates.displayX + "px";
+                clickMarker.style.top = coordinates.displayY + "px";
+                clickMarker.style.display = "block";
             });
-
 
             /*
              * Mouse leaves image
              */
             templatePreview.addEventListener("mouseleave", function () {
-
                 mouseCoords.textContent = "0 | 0";
-
-                /*
-                 * Hide alignment guides when mouse leaves image
-                 */
                 verticalGuide.style.display = "none";
                 horizontalGuide.style.display = "none";
-
             });
-
 
             /*
              * Check before submitting form
              */
             certForm.addEventListener("submit", function (event) {
-
-                if (
-                    nameX.value === "" ||
-                    nameY.value === ""
-                ) {
-
+                if (nameX.value === "" || nameY.value === "") {
                     event.preventDefault();
-
-                    alert(
-                        "Please click on the certificate image to select a position."
-                    );
-
+                    alert("Please click on the certificate image to select a position.");
                 }
-
             });
 
         });
-
     </script>
-
-
 </body>
-
 </html>

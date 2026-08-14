@@ -13,8 +13,28 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
 public class CertificateService {
+
+    @PostConstruct
+    public void registerCustomFonts() {
+        try {
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            String[] fontFiles = {"GreatVibes-Regular.ttf", "AlexBrush-Regular.ttf", "Allura-Regular.ttf"};
+            for (String file : fontFiles) {
+                try (InputStream is = getClass().getResourceAsStream("/fonts/" + file)) {
+                    if (is != null) {
+                        Font customFont = Font.createFont(Font.TRUETYPE_FONT, is);
+                        ge.registerFont(customFont);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to load custom fonts: " + e.getMessage());
+        }
+    }
 
     private List<String> readCSVFile(MultipartFile csv) throws IOException {
 
@@ -56,7 +76,8 @@ public class CertificateService {
             MultipartFile csv,
             int nameX,
             int nameY,
-            int fontSize) {
+            String font,
+            int fontSize) throws Exception {
 
         if (template == null || template.isEmpty()) {
             throw new IllegalArgumentException("Template image is required.");
@@ -68,6 +89,10 @@ public class CertificateService {
 
         if (nameX < 0 || nameY < 0) {
             throw new IllegalArgumentException("Coordinates must be positive.");
+        }
+
+        if (font == null || font.trim().isEmpty()) {
+            throw new IllegalArgumentException("Valid font is required.");
         }
 
         if (fontSize <= 0 || fontSize > 200) {
@@ -82,9 +107,10 @@ public class CertificateService {
 
         int nameX = certificate.getNameX();
         int nameY = certificate.getNameY();
+        String font = certificate.getFont();
         int fontSize = certificate.getFontSize();
 
-        validateInputs(template, csv, nameX, nameY, fontSize);
+        validateInputs(template, csv, nameX, nameY, font,fontSize);
 
         BufferedImage templateImage = ImageIO.read(template.getInputStream());
 
@@ -115,6 +141,7 @@ public class CertificateService {
                         studentName,
                         nameX,
                         nameY,
+                        font,
                         fontSize,
                         outputDir);
 
@@ -148,6 +175,7 @@ public class CertificateService {
             String studentName,
             int nameX,
             int nameY,
+            String font,
             int fontSize,
             File outputDir) throws IOException {
 
@@ -164,7 +192,7 @@ public class CertificateService {
 
         g2d.drawImage(originalTemplate, 0, 0, null);
 
-        g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
+        g2d.setFont(new Font(font, Font.PLAIN,fontSize));
         g2d.setColor(Color.BLACK);
 
         FontMetrics metrics = g2d.getFontMetrics();
@@ -173,7 +201,7 @@ public class CertificateService {
 
         int textX = nameX - (textWidth / 2);
 
-        int textY = nameY;
+        int textY = nameY + (metrics.getAscent() - metrics.getDescent()) / 2;
 
         g2d.drawString(studentName, textX, textY);
         g2d.dispose();

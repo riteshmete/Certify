@@ -7,17 +7,19 @@ public class CertificateContainer {
     private MultipartFile csv;
     private int  nameX;
     private int  nameY;
+    private String font;
     private int fontSize;
 
     public CertificateContainer() {
 
     }
 
-    public CertificateContainer(MultipartFile template, MultipartFile csv, int nameX, int nameY, int fontSize) {
+    public CertificateContainer(MultipartFile template, MultipartFile csv, int nameX, int nameY, String font,int fontSize) {
         this.template = template;
         this.csv = csv;
         this.nameX = nameX;
         this.nameY = nameY;
+        this.font = font;
         this.fontSize = fontSize;
     }
 
@@ -51,6 +53,14 @@ public class CertificateContainer {
 
     public void setNameY(int nameY) {
         this.nameY = nameY;
+    }
+
+    public String getFont() {
+        return font;
+    }
+
+    public void setFont(String font) {
+        this.font = font;
     }
 
     public int getFontSize() {
