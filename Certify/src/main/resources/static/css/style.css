@@ -17,6 +17,10 @@
     --shadow-card: 0 4px 18px rgba(0, 0, 0, 0.04);
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -43,6 +47,29 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
+}
+
+.top-quick-nav {
+    margin-bottom: 16px;
+}
+
+.quick-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-color);
+    text-decoration: none;
+    padding: 4px 0;
+    background: transparent;
+    border: none;
+    transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.quick-nav-link:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
 }
 
 .header-container {

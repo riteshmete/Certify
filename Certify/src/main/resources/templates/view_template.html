@@ -43,6 +43,21 @@
             <span id="formErrorText" th:text="${errorMessage}"></span>
         </div>
 
+        <div class="top-quick-nav">
+            <a href="#howItWorks" class="quick-nav-link">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                <span>How it works</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <polyline points="19 12 12 19 5 12"></polyline>
+                </svg>
+            </a>
+        </div>
+
         <form th:action="@{/save}" th:object="${certificateContainer}" method="post" enctype="multipart/form-data"
             id="certForm">
 
@@ -184,7 +199,7 @@
         </form>
 
         <!-- How It Works -->
-        <section class="how-it-works">
+        <section class="how-it-works" id="howItWorks">
 
             <div class="how-it-works-header">
                 <span class="section-label">HOW IT WORKS</span>
@@ -252,8 +267,8 @@
                     <h3>Upload Student List</h3>
 
                     <p>
-                        Add your list of student names
-                        using a CSV file.
+                        Add your student list CSV.
+                        <br><strong style="color: #111111; font-weight: 600;">Note: 1st column must be Names.</strong>
                     </p>
 
                 </div>

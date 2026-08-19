@@ -32,7 +32,7 @@ public class CertificateService {
     public void registerCustomFonts() {
         try {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            String[] fontFiles = {"GreatVibes-Regular.ttf", "AlexBrush-Regular.ttf", "Allura-Regular.ttf"};
+            String[] fontFiles = { "GreatVibes-Regular.ttf", "AlexBrush-Regular.ttf", "Allura-Regular.ttf" };
             for (String file : fontFiles) {
                 try (InputStream is = getClass().getResourceAsStream("/fonts/" + file)) {
                     if (is != null) {
@@ -141,7 +141,7 @@ public class CertificateService {
         String font = certificate.getFont();
         int fontSize = certificate.getFontSize();
 
-        validateInputs(template, csv, nameX, nameY, font,fontSize);
+        validateInputs(template, csv, nameX, nameY, font, fontSize);
 
         BufferedImage templateImage = ImageIO.read(template.getInputStream());
 
@@ -228,7 +228,7 @@ public class CertificateService {
 
         g2d.drawImage(originalTemplate, 0, 0, null);
 
-        g2d.setFont(new Font(font, Font.PLAIN,fontSize));
+        g2d.setFont(new Font(font, Font.PLAIN, fontSize));
         g2d.setColor(Color.BLACK);
 
         FontMetrics metrics = g2d.getFontMetrics();
