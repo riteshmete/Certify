@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Certify - Error</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main class="main-container">
+    <section class="section-card" style="max-width: 720px; margin: 40px auto;">
+        <h1 class="section-title">Something went wrong</h1>
+        <p>We couldn't complete your request. Please go back and try again.</p>
+        <p th:if="${status != null}">Status: <span th:text="${status}">Error</span></p>
+        <a th:href="@{/view}">Return to form</a>
+    </section>
+</main>
+</body>
+</html>
