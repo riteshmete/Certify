@@ -53,7 +53,7 @@ public final class FileValidator {
     }
 
     public static boolean isValidCsvFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
+        if (file == null) {
             return false;
         }
 

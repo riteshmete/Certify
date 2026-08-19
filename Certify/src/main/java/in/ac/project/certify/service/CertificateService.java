@@ -96,8 +96,12 @@ public class CertificateService {
             throw new IllegalArgumentException("Template image is too large. Maximum size is 10 MB.");
         }
 
-        if (csv == null || csv.isEmpty()) {
+        if (csv == null) {
             throw new IllegalArgumentException("CSV file is required.");
+        }
+
+        if (csv.isEmpty()) {
+            throw new IllegalArgumentException("CSV file is empty. Please upload a CSV containing student names.");
         }
 
         if (!FileValidator.isValidCsvFile(csv)) {
@@ -136,13 +140,13 @@ public class CertificateService {
         BufferedImage templateImage = ImageIO.read(template.getInputStream());
 
         if (templateImage == null) {
-            throw new IOException("Invalid template image.");
+            throw new IllegalArgumentException("Invalid template image.");
         }
 
         List<String> students = readCSVFile(csv);
 
         if (students.isEmpty()) {
-            throw new IOException("CSV contains no student names.");
+            throw new IllegalArgumentException("CSV file is empty or contains no student names.");
         }
 
         List<File> generatedFiles = new ArrayList<>();

@@ -100,8 +100,8 @@
                         <div class="selected-coords-box">
                             <strong>Selected Position</strong>
                             <div class="coords-display">
-                                <span>X: <strong id="displayX">--</strong></span>
-                                <span>Y: <strong id="displayY">--</strong></span>
+                                <span>X: <strong id="displayX" th:text="${certificateContainer.nameX > 0 ? certificateContainer.nameX : '--'}">--</strong></span>
+                                <span>Y: <strong id="displayY" th:text="${certificateContainer.nameY > 0 ? certificateContainer.nameY : '--'}">--</strong></span>
                             </div>
                         </div>
 
@@ -273,6 +273,8 @@
              * Check before submitting form
              */
             certForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+
                 const templateFile = templateInput.files[0];
                 const csvFile = csvInput.files[0];
                 const fontValue = fontSelect.value.trim();
@@ -281,7 +283,6 @@
                 const yValue = Number(nameY.value);
 
                 if (!templateFile || !templateFile.type.startsWith("image/")) {
-                    event.preventDefault();
                     showFormError("Please select a valid image file for template.");
                     return;
                 }
@@ -292,36 +293,67 @@
 
                 if (!csvFile || !csvFileName.endsWith(".csv")
                     || (csvContentType !== "" && !validCsvContentTypes.includes(csvContentType))) {
-                    event.preventDefault();
                     showFormError("Please select a valid .csv file.");
                     return;
                 }
 
                 if (!fontValue) {
-                    event.preventDefault();
                     showFormError("Valid font is required.");
                     return;
                 }
 
                 if (!Number.isInteger(fontSizeValue) || fontSizeValue < 1 || fontSizeValue > 200) {
-                    event.preventDefault();
                     showFormError("Font size must be between 1 and 200.");
                     return;
                 }
 
                 if (nameX.value === "" || nameY.value === "") {
-                    event.preventDefault();
                     showFormError("Please click on the certificate image to select a position.");
                     return;
                 }
 
                 if (Number.isNaN(xValue) || Number.isNaN(yValue) || xValue < 0 || yValue < 0) {
-                    event.preventDefault();
                     showFormError("Coordinates must be positive.");
                     return;
                 }
 
                 clearFormError();
+
+                const submitBtn = document.getElementById("submitBtn");
+                const originalBtnValue = submitBtn.value;
+                submitBtn.disabled = true;
+                submitBtn.value = "Generating...";
+
+                const formData = new FormData(certForm);
+
+                fetch("/save", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(async function (response) {
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const downloadUrl = window.URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = downloadUrl;
+                        a.download = "certificates.zip";
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(downloadUrl);
+                        clearFormError();
+                    } else {
+                        const errorText = await response.text();
+                        showFormError(errorText || "Failed to generate certificates.");
+                    }
+                })
+                .catch(function (error) {
+                    showFormError("An error occurred: " + error.message);
+                })
+                .finally(function () {
+                    submitBtn.disabled = false;
+                    submitBtn.value = originalBtnValue;
+                });
             });
 
             if (formErrorText.textContent.trim() !== "") {

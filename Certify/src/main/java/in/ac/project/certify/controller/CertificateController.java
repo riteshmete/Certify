@@ -31,28 +31,31 @@ public class CertificateController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<InputStreamResource> submitForm(
-            @ModelAttribute CertificateContainer certificate)
-            throws Exception {
+    public ResponseEntity<?> submitForm(
+            @ModelAttribute("certificateContainer") CertificateContainer certificate) {
 
-        File zipFile = certificateService.generateCertificates(certificate);
+        try {
+            File zipFile = certificateService.generateCertificates(certificate);
 
-        InputStreamResource resource =
-                new InputStreamResource(new FileInputStream(zipFile));
+            InputStreamResource resource =
+                    new InputStreamResource(new FileInputStream(zipFile));
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=certificates.zip")
-                .contentLength(zipFile.length())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=certificates.zip")
+                    .contentLength(zipFile.length())
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+        } catch (Exception ex) {
+            String errorMsg = ex.getMessage() != null ? ex.getMessage() : "An error occurred while processing your request.";
+            return ResponseEntity.badRequest().body(errorMsg);
+        }
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public String handleValidationError(IllegalArgumentException ex, Model model) {
-        model.addAttribute("certificateContainer", new CertificateContainer());
-        model.addAttribute("errorMessage", ex.getMessage());
-        return "view_template";
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleValidationError(Exception ex) {
+        String errorMsg = ex.getMessage() != null ? ex.getMessage() : "An error occurred while processing your request.";
+        return ResponseEntity.badRequest().body(errorMsg);
     }
 
 
