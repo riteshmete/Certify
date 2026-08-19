@@ -23,7 +23,7 @@ public class CertificateController {
     @Autowired
     private CertificateService certificateService;
 
-    @GetMapping("/view")
+    @GetMapping({"/", "/view"})
     public String viewForm(Model model){
         CertificateContainer certificate = new CertificateContainer();
         model.addAttribute("certificateContainer",certificate);
