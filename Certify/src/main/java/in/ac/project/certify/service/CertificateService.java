@@ -2,6 +2,8 @@ package in.ac.project.certify.service;
 
 import in.ac.project.certify.model.CertificateContainer;
 import in.ac.project.certify.util.FileValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +21,8 @@ import jakarta.annotation.PostConstruct;
 
 @Service
 public class CertificateService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CertificateService.class);
 
     private static final long MAX_TEMPLATE_IMAGE_SIZE_BYTES = 10L * 1024 * 1024;
     private static final long MAX_CSV_SIZE_BYTES = 5L * 1024 * 1024;
@@ -38,7 +42,7 @@ public class CertificateService {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Failed to load custom fonts: " + e.getMessage());
+            logger.error("Failed to load custom fonts", e);
         }
     }
 
@@ -178,15 +182,11 @@ public class CertificateService {
 
                     generatedFiles.add(certFile);
 
-                    System.out.println("Generated: " + studentName);
+                    logger.info("Generated: {}", studentName);
 
                 } catch (Exception e) {
 
-                    System.out.println(
-                            "Failed to generate certificate for "
-                                    + studentName
-                                    + " : "
-                                    + e.getMessage());
+                    logger.error("Failed to generate certificate for {}: {}", studentName, e.getMessage());
                 }
             }
 
@@ -194,9 +194,7 @@ public class CertificateService {
                 throw new Exception("No certificates were generated.");
             }
 
-            System.out.println("Successfully generated "
-                    + generatedFiles.size()
-                    + " certificates.");
+            logger.info("Successfully generated {} certificates.", generatedFiles.size());
 
             File zipFile = createZipFile(generatedFiles, requestDir);
             return Files.readAllBytes(zipFile.toPath());

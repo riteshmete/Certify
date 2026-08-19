@@ -99,14 +99,19 @@
                     <!-- Font -->
                     <div class="form-group">
                         <label for="font" class="field-label">Font Family</label>
-                        <select id="font" th:field="*{font}" class="form-control">
-                            <option value="Great Vibes">Great Vibes</option>
-                            <option value="Alex Brush">Alex Brush</option>
-                            <option value="Allura">Allura</option>
-                            <option value="Arial">Arial</option>
-                            <option value="Times New Roman">Times New Roman</option>
-                            <option value="Georgia">Georgia</option>
-                        </select>
+                        <input type="text" id="font" th:field="*{font}" list="fontSuggestions" class="form-control" placeholder="Select or type font name..." required autocomplete="off">
+                        <datalist id="fontSuggestions">
+                            <option value="Great Vibes"></option>
+                            <option value="Alex Brush"></option>
+                            <option value="Allura"></option>
+                            <option value="Arial"></option>
+                            <option value="Times New Roman"></option>
+                            <option value="Georgia"></option>
+                            <option value="Courier New"></option>
+                            <option value="Verdana"></option>
+                            <option value="Trebuchet MS"></option>
+                            <option value="Impact"></option>
+                        </datalist>
                     </div>
 
                     <!-- Font Size -->
@@ -364,7 +369,14 @@
                 formError.style.display = "none";
             }
 
+            fontSelect.addEventListener("input", clearFormError);
             fontSelect.addEventListener("change", clearFormError);
+            fontSelect.addEventListener("focus", function () {
+                this.select();
+            });
+            fontSelect.addEventListener("click", function () {
+                this.select();
+            });
             fontSizeInput.addEventListener("input", clearFormError);
             nameX.addEventListener("input", clearFormError);
             nameY.addEventListener("input", clearFormError);
