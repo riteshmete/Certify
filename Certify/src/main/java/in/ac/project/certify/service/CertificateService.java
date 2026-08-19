@@ -1,6 +1,7 @@
 package in.ac.project.certify.service;
 
 import in.ac.project.certify.model.CertificateContainer;
+import in.ac.project.certify.util.FileValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +18,9 @@ import jakarta.annotation.PostConstruct;
 
 @Service
 public class CertificateService {
+
+    private static final long MAX_TEMPLATE_IMAGE_SIZE_BYTES = 10L * 1024 * 1024;
+    private static final long MAX_CSV_SIZE_BYTES = 5L * 1024 * 1024;
 
     @PostConstruct
     public void registerCustomFonts() {
@@ -83,8 +87,25 @@ public class CertificateService {
             throw new IllegalArgumentException("Template image is required.");
         }
 
+        if (!FileValidator.isValidImageFile(template)) {
+            throw new IllegalArgumentException(
+                    "Invalid template image. Please upload a JPG, PNG, GIF, BMP, or WEBP image.");
+        }
+
+        if (template.getSize() > MAX_TEMPLATE_IMAGE_SIZE_BYTES) {
+            throw new IllegalArgumentException("Template image is too large. Maximum size is 10 MB.");
+        }
+
         if (csv == null || csv.isEmpty()) {
             throw new IllegalArgumentException("CSV file is required.");
+        }
+
+        if (!FileValidator.isValidCsvFile(csv)) {
+            throw new IllegalArgumentException("Invalid CSV file. Please upload a valid .csv file.");
+        }
+
+        if (csv.getSize() > MAX_CSV_SIZE_BYTES) {
+            throw new IllegalArgumentException("CSV file is too large. Maximum size is 5 MB.");
         }
 
         if (nameX < 0 || nameY < 0) {

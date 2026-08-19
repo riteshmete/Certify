@@ -38,7 +38,7 @@
                     <!-- Upload CSV -->
                     <div class="form-group">
                         <label for="csvInput">Upload CSV</label>
-                        <input type="file" id="csvInput" th:field="*{csv}" required>
+                        <input type="file" id="csvInput" th:field="*{csv}" accept=".csv,text/csv" required>
                     </div>
 
                     <!-- Font -->
@@ -112,6 +112,7 @@
         document.addEventListener("DOMContentLoaded", function () {
 
             const templateInput = document.getElementById("templateInput");
+            const csvInput = document.getElementById("csvInput");
             const templatePreview = document.getElementById("templatePreview");
             const previewSection = document.getElementById("previewSection");
             const previewPlaceholder = document.getElementById("previewPlaceholder");
@@ -244,6 +245,26 @@
              * Check before submitting form
              */
             certForm.addEventListener("submit", function (event) {
+                const templateFile = templateInput.files[0];
+                const csvFile = csvInput.files[0];
+
+                if (!templateFile || !templateFile.type.startsWith("image/")) {
+                    event.preventDefault();
+                    alert("Please select a valid image file for template.");
+                    return;
+                }
+
+                const csvFileName = csvFile ? csvFile.name.toLowerCase() : "";
+                const csvContentType = csvFile && csvFile.type ? csvFile.type.toLowerCase() : "";
+                const validCsvContentTypes = ["text/csv", "application/csv", "text/plain"];
+
+                if (!csvFile || !csvFileName.endsWith(".csv")
+                    || (csvContentType !== "" && !validCsvContentTypes.includes(csvContentType))) {
+                    event.preventDefault();
+                    alert("Please select a valid .csv file.");
+                    return;
+                }
+
                 if (nameX.value === "" || nameY.value === "") {
                     event.preventDefault();
                     alert("Please click on the certificate image to select a position.");
