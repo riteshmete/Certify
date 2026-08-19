@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -21,6 +22,7 @@ public class CertificateService {
 
     private static final long MAX_TEMPLATE_IMAGE_SIZE_BYTES = 10L * 1024 * 1024;
     private static final long MAX_CSV_SIZE_BYTES = 5L * 1024 * 1024;
+    private static final int MAX_STUDENT_RECORDS = 500;
 
     @PostConstruct
     public void registerCustomFonts() {
@@ -125,7 +127,7 @@ public class CertificateService {
         }
     }
 
-    public File generateCertificates(CertificateContainer certificate) throws Exception {
+    public byte[] generateCertificates(CertificateContainer certificate) throws Exception {
 
         MultipartFile template = certificate.getTemplate();
         MultipartFile csv = certificate.getCsv();
@@ -149,50 +151,61 @@ public class CertificateService {
             throw new IllegalArgumentException("CSV file is empty or contains no student names.");
         }
 
-        List<File> generatedFiles = new ArrayList<>();
-
-        File outputDir = new File("certificate_output");
-
-        if (!outputDir.exists() && !outputDir.mkdirs()) {
-            throw new IOException("Unable to create output directory.");
+        if (students.size() > MAX_STUDENT_RECORDS) {
+            throw new IllegalArgumentException(
+                    "CSV contains too many records. A maximum of 500 certificates can be generated per request.");
         }
 
-        for (String studentName : students) {
+        File requestDir = null;
 
-            try {
+        try {
+            requestDir = Files.createTempDirectory("cert_job_").toFile();
 
-                File certFile = generateSingleCertificate(
-                        templateImage,
-                        studentName,
-                        nameX,
-                        nameY,
-                        font,
-                        fontSize,
-                        outputDir);
+            List<File> generatedFiles = new ArrayList<>();
 
-                generatedFiles.add(certFile);
+            for (String studentName : students) {
 
-                System.out.println("Generated: " + studentName);
+                try {
 
-            } catch (Exception e) {
+                    File certFile = generateSingleCertificate(
+                            templateImage,
+                            studentName,
+                            nameX,
+                            nameY,
+                            font,
+                            fontSize,
+                            requestDir);
 
-                System.out.println(
-                        "Failed to generate certificate for "
-                                + studentName
-                                + " : "
-                                + e.getMessage());
+                    generatedFiles.add(certFile);
+
+                    System.out.println("Generated: " + studentName);
+
+                } catch (Exception e) {
+
+                    System.out.println(
+                            "Failed to generate certificate for "
+                                    + studentName
+                                    + " : "
+                                    + e.getMessage());
+                }
+            }
+
+            if (generatedFiles.isEmpty()) {
+                throw new Exception("No certificates were generated.");
+            }
+
+            System.out.println("Successfully generated "
+                    + generatedFiles.size()
+                    + " certificates.");
+
+            File zipFile = createZipFile(generatedFiles, requestDir);
+            return Files.readAllBytes(zipFile.toPath());
+
+        } finally {
+            if (requestDir != null && requestDir.exists()) {
+                deleteDirectory(requestDir);
             }
         }
-
-        if (generatedFiles.isEmpty()) {
-            throw new Exception("No certificates were generated.");
-        }
-
-        System.out.println("Successfully generated "
-                + generatedFiles.size()
-                + " certificates.");
-
-        return createZipFile(generatedFiles);
     }
 
     private File generateSingleCertificate(
@@ -243,9 +256,9 @@ public class CertificateService {
         return certificateFile;
     }
 
-    private File createZipFile(List<File> generatedFiles) throws IOException {
+    private File createZipFile(List<File> generatedFiles, File outputDir) throws IOException {
 
-        File zipFile = new File("certificate_output/certificates.zip");
+        File zipFile = new File(outputDir, "certificates.zip");
 
         try (FileOutputStream fos = new FileOutputStream(zipFile);
                 ZipOutputStream zipOut = new ZipOutputStream(fos)) {
@@ -271,5 +284,19 @@ public class CertificateService {
         }
 
         return zipFile;
+    }
+
+    private void deleteDirectory(File dir) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteDirectory(file);
+                } else {
+                    file.delete();
+                }
+            }
+        }
+        dir.delete();
     }
 }

@@ -35,15 +35,15 @@ public class CertificateController {
             @ModelAttribute("certificateContainer") CertificateContainer certificate) {
 
         try {
-            File zipFile = certificateService.generateCertificates(certificate);
+            byte[] zipBytes = certificateService.generateCertificates(certificate);
 
-            InputStreamResource resource =
-                    new InputStreamResource(new FileInputStream(zipFile));
+            org.springframework.core.io.ByteArrayResource resource =
+                    new org.springframework.core.io.ByteArrayResource(zipBytes);
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
                             "attachment; filename=certificates.zip")
-                    .contentLength(zipFile.length())
+                    .contentLength(zipBytes.length)
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(resource);
         } catch (Exception ex) {
