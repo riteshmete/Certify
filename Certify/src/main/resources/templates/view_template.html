@@ -21,6 +21,10 @@
 
     <!-- Main Content -->
     <main class="main-container">
+        <div id="formError" role="alert" aria-live="polite" style="max-width: 960px; margin: 0 auto 16px; padding: 12px 16px; border: 1px solid #f5c2c7; background: #f8d7da; color: #842029; border-radius: 8px; display: none;">
+            <span id="formErrorText" th:text="${errorMessage}"></span>
+        </div>
+
         <form th:action="@{/save}" th:object="${certificateContainer}" method="post" enctype="multipart/form-data" id="certForm">
             
             <div class="sections-grid">
@@ -127,8 +131,29 @@
             const clickMarker = document.getElementById("clickMarker");
             const verticalGuide = document.getElementById("verticalGuide");
             const horizontalGuide = document.getElementById("horizontalGuide");
+            const fontSelect = document.getElementById("font");
+            const fontSizeInput = document.getElementById("fontSize");
+            const formError = document.getElementById("formError");
+            const formErrorText = document.getElementById("formErrorText");
 
             const certForm = document.getElementById("certForm");
+
+            function showFormError(message) {
+                formErrorText.textContent = message;
+                formError.style.display = "block";
+            }
+
+            function clearFormError() {
+                if (formErrorText.textContent.trim() !== "") {
+                    formErrorText.textContent = "";
+                }
+                formError.style.display = "none";
+            }
+
+            fontSelect.addEventListener("change", clearFormError);
+            fontSizeInput.addEventListener("input", clearFormError);
+            nameX.addEventListener("input", clearFormError);
+            nameY.addEventListener("input", clearFormError);
 
             /*
              * Upload image
@@ -141,10 +166,12 @@
                 }
 
                 if (!file.type.startsWith("image/")) {
-                    alert("Please select an image file.");
                     templateInput.value = "";
+                    showFormError("Please select an image file.");
                     return;
                 }
+
+                clearFormError();
 
                 templatePreview.src = URL.createObjectURL(file);
 
@@ -223,6 +250,7 @@
 
                 nameX.value = coordinates.x;
                 nameY.value = coordinates.y;
+                clearFormError();
 
                 displayX.textContent = coordinates.x;
                 displayY.textContent = coordinates.y;
@@ -247,10 +275,14 @@
             certForm.addEventListener("submit", function (event) {
                 const templateFile = templateInput.files[0];
                 const csvFile = csvInput.files[0];
+                const fontValue = fontSelect.value.trim();
+                const fontSizeValue = Number(fontSizeInput.value);
+                const xValue = Number(nameX.value);
+                const yValue = Number(nameY.value);
 
                 if (!templateFile || !templateFile.type.startsWith("image/")) {
                     event.preventDefault();
-                    alert("Please select a valid image file for template.");
+                    showFormError("Please select a valid image file for template.");
                     return;
                 }
 
@@ -261,15 +293,40 @@
                 if (!csvFile || !csvFileName.endsWith(".csv")
                     || (csvContentType !== "" && !validCsvContentTypes.includes(csvContentType))) {
                     event.preventDefault();
-                    alert("Please select a valid .csv file.");
+                    showFormError("Please select a valid .csv file.");
+                    return;
+                }
+
+                if (!fontValue) {
+                    event.preventDefault();
+                    showFormError("Valid font is required.");
+                    return;
+                }
+
+                if (!Number.isInteger(fontSizeValue) || fontSizeValue < 1 || fontSizeValue > 200) {
+                    event.preventDefault();
+                    showFormError("Font size must be between 1 and 200.");
                     return;
                 }
 
                 if (nameX.value === "" || nameY.value === "") {
                     event.preventDefault();
-                    alert("Please click on the certificate image to select a position.");
+                    showFormError("Please click on the certificate image to select a position.");
+                    return;
                 }
+
+                if (Number.isNaN(xValue) || Number.isNaN(yValue) || xValue < 0 || yValue < 0) {
+                    event.preventDefault();
+                    showFormError("Coordinates must be positive.");
+                    return;
+                }
+
+                clearFormError();
             });
+
+            if (formErrorText.textContent.trim() !== "") {
+                formError.style.display = "block";
+            }
 
         });
     </script>
