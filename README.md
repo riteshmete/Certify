@@ -1,10 +1,5 @@
 # Certify - Bulk Certificate Generator
 
-[![Java](https://img.shields.io/badge/Java-21-orange.svg?style=flat&logo=openjdk)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.x%20%2F%204.1.0-brightgreen.svg?style=flat&logo=springboot)](https://spring.io/projects/spring-boot)
-[![Thymeleaf](https://img.shields.io/badge/Thymeleaf-3.x-green.svg?style=flat&logo=thymeleaf)](https://www.thymeleaf.org/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg?style=flat&logo=docker)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 **Certify** is an open-source, high-performance web application built with **Spring Boot**, **Thymeleaf**, and **Java 2D (AWT)** that empowers users to visually place text, customize typography, and generate hundreds of personalized high-resolution certificate images in seconds from a single template and CSV recipient list.
 
@@ -162,19 +157,4 @@ Key configuration parameters defined in `application.properties`:
 
 ---
 
-## Contributing
 
-Contributions, issues, and feature requests are welcome!
-Feel free to check the [issues page](https://github.com/ritesh2996/Certificate_genrator_Thymeleaf-/issues).
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## License
-
-Distributed under the **MIT License**. See `LICENSE` for more information.
