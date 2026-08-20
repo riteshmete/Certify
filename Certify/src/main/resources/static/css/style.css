@@ -814,6 +814,13 @@ select.form-control {
     box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.3);
 }
 
+.swatch-black { background-color: #000000 !important; }
+.swatch-navy { background-color: #0B2545 !important; }
+.swatch-gold { background-color: #B8860B !important; }
+.swatch-maroon { background-color: #800000 !important; }
+.swatch-emerald { background-color: #004D40 !important; }
+.swatch-charcoal { background-color: #2C3E50 !important; }
+
 /* Typography Preview Card */
 .font-preview-card {
     margin-top: 2px;
