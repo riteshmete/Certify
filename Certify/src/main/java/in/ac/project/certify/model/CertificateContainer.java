@@ -9,18 +9,24 @@ public class CertificateContainer {
     private int  nameY;
     private String font;
     private int fontSize;
+    private boolean bold;
+    private boolean italic;
+    private String fontColor = "#000000";
 
     public CertificateContainer() {
 
     }
 
-    public CertificateContainer(MultipartFile template, MultipartFile csv, int nameX, int nameY, String font,int fontSize) {
+    public CertificateContainer(MultipartFile template, MultipartFile csv, int nameX, int nameY, String font, int fontSize, boolean bold, boolean italic, String fontColor) {
         this.template = template;
         this.csv = csv;
         this.nameX = nameX;
         this.nameY = nameY;
         this.font = font;
         this.fontSize = fontSize;
+        this.bold = bold;
+        this.italic = italic;
+        this.fontColor = fontColor;
     }
 
     public MultipartFile getTemplate() {
@@ -69,5 +75,29 @@ public class CertificateContainer {
 
     public void setFontSize(int fontSize) {
         this.fontSize = fontSize;
+    }
+
+    public boolean isBold() {
+        return bold;
+    }
+
+    public void setBold(boolean bold) {
+        this.bold = bold;
+    }
+
+    public boolean isItalic() {
+        return italic;
+    }
+
+    public void setItalic(boolean italic) {
+        this.italic = italic;
+    }
+
+    public String getFontColor() {
+        return fontColor;
+    }
+
+    public void setFontColor(String fontColor) {
+        this.fontColor = fontColor;
     }
 }

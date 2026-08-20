@@ -26,6 +26,8 @@ public class CertificateController {
     @GetMapping({"/", "/view"})
     public String viewForm(Model model){
         CertificateContainer certificate = new CertificateContainer();
+        certificate.setFont("Times New Roman");
+        certificate.setFontColor("#000000");
         model.addAttribute("certificateContainer",certificate);
         return "view_template";
     }

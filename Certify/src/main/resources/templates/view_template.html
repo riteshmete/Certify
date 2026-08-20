@@ -9,7 +9,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Great+Vibes&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Cinzel:wght@400;700&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Montserrat:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
         rel="stylesheet">
 
     <!-- CSS -->
@@ -26,6 +26,19 @@
                 <span class="app-title">Certify</span>
                 <span class="app-subtitle">Bulk Certificate Generator</span>
             </div>
+
+            <a href="#howItWorks" class="quick-nav-link">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                <span>How it works</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <polyline points="19 12 12 19 5 12"></polyline>
+                </svg>
+            </a>
         </div>
     </header>
 
@@ -41,21 +54,6 @@
                 <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             <span id="formErrorText" th:text="${errorMessage}"></span>
-        </div>
-
-        <div class="top-quick-nav">
-            <a href="#howItWorks" class="quick-nav-link">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="16" x2="12" y2="12"/>
-                    <line x1="12" y1="8" x2="12.01" y2="8"/>
-                </svg>
-                <span>How it works</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <polyline points="19 12 12 19 5 12"></polyline>
-                </svg>
-            </a>
         </div>
 
         <form th:action="@{/save}" th:object="${certificateContainer}" method="post" enctype="multipart/form-data"
@@ -111,29 +109,86 @@
                         </label>
                     </div>
 
-                    <!-- Font -->
+                    <!-- Font Family Select -->
                     <div class="form-group">
                         <label for="font" class="field-label">Font Family</label>
-                        <input type="text" id="font" th:field="*{font}" list="fontSuggestions" class="form-control" placeholder="Select or type font name..." required autocomplete="off">
-                        <datalist id="fontSuggestions">
-                            <option value="Great Vibes"></option>
-                            <option value="Alex Brush"></option>
-                            <option value="Allura"></option>
-                            <option value="Arial"></option>
-                            <option value="Times New Roman"></option>
-                            <option value="Georgia"></option>
-                            <option value="Courier New"></option>
-                            <option value="Verdana"></option>
-                            <option value="Trebuchet MS"></option>
-                            <option value="Impact"></option>
-                        </datalist>
+                        <select id="font" th:field="*{font}" class="form-control font-select-custom" required>
+                            <option value="Times New Roman" style="font-family: 'Times New Roman', serif;">Times New Roman</option>
+                            <option value="Arial" style="font-family: 'Arial', sans-serif;">Arial</option>
+                            <option value="Georgia" style="font-family: 'Georgia', serif;">Georgia</option>
+                            <option value="Great Vibes" style="font-family: 'Great Vibes', cursive; font-size: 1.25rem;">Great Vibes</option>
+                            <option value="Alex Brush" style="font-family: 'Alex Brush', cursive; font-size: 1.25rem;">Alex Brush</option>
+                            <option value="Allura" style="font-family: 'Allura', cursive; font-size: 1.25rem;">Allura</option>
+                            <option value="Dancing Script" style="font-family: 'Dancing Script', cursive; font-size: 1.15rem;">Dancing Script</option>
+                            <option value="Playfair Display" style="font-family: 'Playfair Display', serif; font-size: 1.05rem;">Playfair Display</option>
+                            <option value="Cinzel" style="font-family: 'Cinzel', serif; font-size: 1.05rem;">Cinzel</option>
+                            <option value="Montserrat" style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem;">Montserrat</option>
+                            <option value="Courier New" style="font-family: 'Courier New', monospace;">Courier New</option>
+                            <option value="Verdana" style="font-family: 'Verdana', sans-serif;">Verdana</option>
+                            <option value="Trebuchet MS" style="font-family: 'Trebuchet MS', sans-serif;">Trebuchet MS</option>
+                            <option value="Impact" style="font-family: 'Impact', sans-serif;">Impact</option>
+                        </select>
                     </div>
 
-                    <!-- Font Size -->
-                    <div class="form-group">
-                        <label for="fontSize" class="field-label">Font Size (pt)</label>
-                        <input type="number" id="fontSize" th:field="*{fontSize}" placeholder="e.g. 40" required
-                            class="form-control">
+                    <!-- Font Size & Text Style -->
+                    <!-- Font Size, Style & Color Row -->
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="fontSize" class="field-label">Size (pt)</label>
+                            <input type="number" id="fontSize" th:field="*{fontSize}" placeholder="e.g. 40" required
+                                class="form-control">
+                        </div>
+
+                        <div class="form-group flex-1">
+                            <label class="field-label">Style</label>
+                            <div class="style-toggle-container">
+                                <label class="style-toggle-card" id="boldToggleCard" title="Toggle Bold Style">
+                                    <input type="checkbox" id="bold" th:field="*{bold}" class="style-checkbox-hidden">
+                                    <span class="style-toggle-pill">
+                                        <strong class="pill-bold-icon">B</strong>
+                                    </span>
+                                </label>
+
+                                <label class="style-toggle-card" id="italicToggleCard" title="Toggle Italic Style">
+                                    <input type="checkbox" id="italic" th:field="*{italic}" class="style-checkbox-hidden">
+                                    <span class="style-toggle-pill">
+                                        <em class="pill-italic-icon">I</em>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group flex-1">
+                            <label for="fontColor" class="field-label">Text Color</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" id="fontColor" th:field="*{fontColor}" value="#000000" class="color-picker-input">
+                                <span id="colorHexText" class="color-hex-label">#000000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preset Color Swatches -->
+                    <div class="color-swatches-row">
+                        <span class="swatch-label">Presets:</span>
+                        <div class="swatches-list">
+                            <button type="button" class="color-swatch-btn active" data-color="#000000" style="background-color: #000000;" title="Black"></button>
+                            <button type="button" class="color-swatch-btn" data-color="#0B2545" style="background-color: #0B2545;" title="Navy Blue"></button>
+                            <button type="button" class="color-swatch-btn" data-color="#B8860B" style="background-color: #B8860B;" title="Classic Gold"></button>
+                            <button type="button" class="color-swatch-btn" data-color="#800000" style="background-color: #800000;" title="Maroon"></button>
+                            <button type="button" class="color-swatch-btn" data-color="#004D40" style="background-color: #004D40;" title="Emerald Green"></button>
+                            <button type="button" class="color-swatch-btn" data-color="#2C3E50" style="background-color: #2C3E50;" title="Charcoal"></button>
+                        </div>
+                    </div>
+
+                    <!-- Live Typography Preview Card -->
+                    <div class="font-preview-card">
+                        <div class="font-preview-header">
+                            <span class="font-preview-title">Typography Preview</span>
+                            <span id="fontPreviewDetails" class="font-preview-details">Select font to preview</span>
+                        </div>
+                        <div class="font-preview-sample-box">
+                            <p id="fontSampleText" class="font-preview-sample-text">Sample Student Name</p>
+                        </div>
                     </div>
 
                     <!-- Hidden Coordinates -->
@@ -367,6 +422,10 @@
             const horizontalGuide = document.getElementById("horizontalGuide");
             const fontSelect = document.getElementById("font");
             const fontSizeInput = document.getElementById("fontSize");
+            const boldCheckbox = document.getElementById("bold");
+            const italicCheckbox = document.getElementById("italic");
+            const fontSampleText = document.getElementById("fontSampleText");
+            const fontPreviewDetails = document.getElementById("fontPreviewDetails");
             const formError = document.getElementById("formError");
             const formErrorText = document.getElementById("formErrorText");
 
@@ -384,15 +443,73 @@
                 formError.style.display = "none";
             }
 
-            fontSelect.addEventListener("input", clearFormError);
-            fontSelect.addEventListener("change", clearFormError);
-            fontSelect.addEventListener("focus", function () {
-                this.select();
+            const fontColorInput = document.getElementById("fontColor");
+            const colorHexText = document.getElementById("colorHexText");
+            const colorSwatches = document.querySelectorAll(".color-swatch-btn");
+
+            function updateFontPreview() {
+                const selectedFont = fontSelect.value || "Times New Roman";
+                const fontSize = fontSizeInput.value ? fontSizeInput.value + "pt" : "0pt";
+                const isBold = boldCheckbox.checked;
+                const isItalic = italicCheckbox.checked;
+                const fontColor = fontColorInput.value || "#000000";
+
+                fontSelect.style.fontFamily = `'${selectedFont}', serif, sans-serif`;
+                fontSampleText.style.fontFamily = `'${selectedFont}', serif, sans-serif`;
+
+                fontSampleText.style.fontWeight = isBold ? "bold" : "normal";
+                fontSampleText.style.fontStyle = isItalic ? "italic" : "normal";
+                fontSampleText.style.color = fontColor;
+
+                if (colorHexText) {
+                    colorHexText.textContent = fontColor.toUpperCase();
+                }
+
+                colorSwatches.forEach(btn => {
+                    if (btn.dataset.color.toLowerCase() === fontColor.toLowerCase()) {
+                        btn.classList.add("active");
+                    } else {
+                        btn.classList.remove("active");
+                    }
+                });
+
+                let detailsStr = selectedFont;
+                if (fontSizeInput.value) detailsStr += ` • ${fontSizeInput.value}pt`;
+                if (isBold) detailsStr += ` • Bold`;
+                if (isItalic) detailsStr += ` • Italic`;
+                fontPreviewDetails.textContent = detailsStr;
+            }
+
+            fontSelect.addEventListener("change", function () {
+                clearFormError();
+                updateFontPreview();
             });
-            fontSelect.addEventListener("click", function () {
-                this.select();
+            fontSizeInput.addEventListener("input", function () {
+                clearFormError();
+                updateFontPreview();
             });
-            fontSizeInput.addEventListener("input", clearFormError);
+            boldCheckbox.addEventListener("change", function () {
+                clearFormError();
+                updateFontPreview();
+            });
+            italicCheckbox.addEventListener("change", function () {
+                clearFormError();
+                updateFontPreview();
+            });
+            fontColorInput.addEventListener("input", function () {
+                clearFormError();
+                updateFontPreview();
+            });
+
+            colorSwatches.forEach(btn => {
+                btn.addEventListener("click", function () {
+                    fontColorInput.value = this.dataset.color;
+                    clearFormError();
+                    updateFontPreview();
+                });
+            });
+
+            updateFontPreview();
             nameX.addEventListener("input", clearFormError);
             nameY.addEventListener("input", clearFormError);
 

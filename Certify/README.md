@@ -145,7 +145,7 @@ Access the app at `http://localhost:8080`.
 
 1. **Upload Template**: Select your certificate background design image (`.png`, `.jpg`, `.webp`, etc.).
 2. **Set Text Position**: Click anywhere on the rendered preview image to auto-fill the target **X** and **Y** pixel coordinates.
-3. **Configure Typography**: Choose your font family (e.g., *Times New Roman*) and set font size in points.
+3. **Configure Typography**: Choose your font family (e.g., *Great Vibes*) and set font size in points.
 4. **Upload CSV & Generate**: Upload your `.csv` file and click **Generate Certificates**. Your browser will prompt you to download `certificates.zip` containing all personalized certificate files!
 
 ---

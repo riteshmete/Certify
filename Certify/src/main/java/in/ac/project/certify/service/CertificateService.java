@@ -140,6 +140,9 @@ public class CertificateService {
         int nameY = certificate.getNameY();
         String font = certificate.getFont();
         int fontSize = certificate.getFontSize();
+        boolean isBold = certificate.isBold();
+        boolean isItalic = certificate.isItalic();
+        String fontColor = certificate.getFontColor();
 
         validateInputs(template, csv, nameX, nameY, font, fontSize);
 
@@ -178,6 +181,9 @@ public class CertificateService {
                             nameY,
                             font,
                             fontSize,
+                            isBold,
+                            isItalic,
+                            fontColor,
                             requestDir);
 
                     generatedFiles.add(certFile);
@@ -213,6 +219,9 @@ public class CertificateService {
             int nameY,
             String font,
             int fontSize,
+            boolean isBold,
+            boolean isItalic,
+            String fontColor,
             File outputDir) throws IOException {
 
         BufferedImage certificate = new BufferedImage(
@@ -228,8 +237,17 @@ public class CertificateService {
 
         g2d.drawImage(originalTemplate, 0, 0, null);
 
-        g2d.setFont(new Font(font, Font.PLAIN, fontSize));
-        g2d.setColor(Color.BLACK);
+        int fontStyle = Font.PLAIN;
+        if (isBold && isItalic) {
+            fontStyle = Font.BOLD | Font.ITALIC;
+        } else if (isBold) {
+            fontStyle = Font.BOLD;
+        } else if (isItalic) {
+            fontStyle = Font.ITALIC;
+        }
+
+        g2d.setFont(new Font(font, fontStyle, fontSize));
+        g2d.setColor(parseColor(fontColor));
 
         FontMetrics metrics = g2d.getFontMetrics();
 
@@ -282,6 +300,21 @@ public class CertificateService {
         }
 
         return zipFile;
+    }
+
+    private Color parseColor(String colorStr) {
+        if (colorStr == null || colorStr.isBlank()) {
+            return Color.BLACK;
+        }
+        try {
+            colorStr = colorStr.trim();
+            if (!colorStr.startsWith("#") && colorStr.matches("^[0-9a-fA-F]{6}$")) {
+                colorStr = "#" + colorStr;
+            }
+            return Color.decode(colorStr);
+        } catch (Exception e) {
+            return Color.BLACK;
+        }
     }
 
     private void deleteDirectory(File dir) {
