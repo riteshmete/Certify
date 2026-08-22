@@ -14,6 +14,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -28,22 +30,69 @@ public class CertificateService {
     private static final long MAX_CSV_SIZE_BYTES = 5L * 1024 * 1024;
     private static final int MAX_STUDENT_RECORDS = 500;
 
+    private static final Map<String, String> FONT_FILE_MAP = Map.ofEntries(
+            Map.entry("Times New Roman", "TimesNewRoman-Regular.ttf"),
+            Map.entry("Arial", "Arial-Regular.ttf"),
+            Map.entry("Georgia", "Georgia-Regular.ttf"),
+            Map.entry("Great Vibes", "GreatVibes-Regular.ttf"),
+            Map.entry("Alex Brush", "AlexBrush-Regular.ttf"),
+            Map.entry("Allura", "Allura-Regular.ttf"),
+            Map.entry("Dancing Script", "DancingScript-Regular.ttf"),
+            Map.entry("Playfair Display", "PlayfairDisplay-Regular.ttf"),
+            Map.entry("Cinzel", "Cinzel-Regular.ttf"),
+            Map.entry("Montserrat", "Montserrat-Regular.ttf"),
+            Map.entry("Courier New", "CourierNew-Regular.ttf"),
+            Map.entry("Verdana", "Verdana-Regular.ttf"),
+            Map.entry("Trebuchet MS", "TrebuchetMS-Regular.ttf"),
+            Map.entry("Impact", "Impact-Regular.ttf")
+    );
+
+    private final Map<String, Font> fontCache = new ConcurrentHashMap<>();
+
     @PostConstruct
-    public void registerCustomFonts() {
-        try {
-            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            String[] fontFiles = { "GreatVibes-Regular.ttf", "AlexBrush-Regular.ttf", "Allura-Regular.ttf" };
-            for (String file : fontFiles) {
-                try (InputStream is = getClass().getResourceAsStream("/fonts/" + file)) {
-                    if (is != null) {
-                        Font customFont = Font.createFont(Font.TRUETYPE_FONT, is);
-                        ge.registerFont(customFont);
-                    }
+    public void initFonts() {
+        for (Map.Entry<String, String> entry : FONT_FILE_MAP.entrySet()) {
+            String fontName = entry.getKey();
+            String fontFile = entry.getValue();
+            try (InputStream is = getClass().getResourceAsStream("/fonts/" + fontFile)) {
+                if (is != null) {
+                    Font baseFont = Font.createFont(Font.TRUETYPE_FONT, is);
+                    fontCache.put(fontName, baseFont);
+                    logger.info("Loaded font: {}", fontName);
+                } else {
+                    logger.error("Font resource not found: /fonts/{}", fontFile);
                 }
+            } catch (Exception e) {
+                logger.error("Failed to load font file /fonts/{} for font '{}'", fontFile, fontName, e);
             }
-        } catch (Exception e) {
-            logger.error("Failed to load custom fonts", e);
         }
+    }
+
+    private Font loadFont(String fontName, int fontStyle, int fontSize) {
+        if (fontName == null || !FONT_FILE_MAP.containsKey(fontName.trim())) {
+            throw new IllegalArgumentException("Unsupported font: " + fontName);
+        }
+
+        String key = fontName.trim();
+        Font baseFont = fontCache.get(key);
+
+        if (baseFont == null) {
+            String fontFile = FONT_FILE_MAP.get(key);
+            try (InputStream is = getClass().getResourceAsStream("/fonts/" + fontFile)) {
+                if (is == null) {
+                    logger.error("Font resource not found: /fonts/{}", fontFile);
+                    throw new IllegalArgumentException("Unsupported font: " + fontName);
+                }
+                baseFont = Font.createFont(Font.TRUETYPE_FONT, is);
+                fontCache.put(key, baseFont);
+                logger.info("Loaded font: {}", key);
+            } catch (Exception e) {
+                logger.error("Failed to load font resource /fonts/{} for font '{}'", fontFile, key, e);
+                throw new IllegalArgumentException("Unsupported font: " + fontName);
+            }
+        }
+
+        return baseFont.deriveFont(fontStyle, (float) fontSize);
     }
 
     private List<String> readCSVFile(MultipartFile csv) throws IOException {
@@ -122,8 +171,8 @@ public class CertificateService {
             throw new IllegalArgumentException("Coordinates must be positive.");
         }
 
-        if (font == null || font.trim().isEmpty()) {
-            throw new IllegalArgumentException("Valid font is required.");
+        if (font == null || font.trim().isEmpty() || !FONT_FILE_MAP.containsKey(font.trim())) {
+            throw new IllegalArgumentException("Unsupported font: " + font);
         }
 
         if (fontSize <= 0 || fontSize > 200) {
@@ -169,6 +218,8 @@ public class CertificateService {
             requestDir = Files.createTempDirectory("cert_job_").toFile();
 
             List<File> generatedFiles = new ArrayList<>();
+
+            logger.info("Generating certificates using font: {}", font);
 
             for (String studentName : students) {
 
@@ -246,7 +297,8 @@ public class CertificateService {
             fontStyle = Font.ITALIC;
         }
 
-        g2d.setFont(new Font(font, fontStyle, fontSize));
+        Font selectedFont = loadFont(font, fontStyle, fontSize);
+        g2d.setFont(selectedFont);
         g2d.setColor(parseColor(fontColor));
 
         FontMetrics metrics = g2d.getFontMetrics();
@@ -330,4 +382,4 @@ public class CertificateService {
         }
         dir.delete();
     }
-}
+}
